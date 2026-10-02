@@ -65,7 +65,7 @@ function MenuItems() {
 }
 
 function HeaderRightContent() {
-  const { user } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.shopCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
@@ -76,8 +76,19 @@ function HeaderRightContent() {
   }
 
   useEffect(() => {
-    dispatch(fetchCartItems(user?.id));
-  }, [dispatch]);
+    if (isAuthenticated) dispatch(fetchCartItems(user?.id));
+  }, [dispatch, isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex lg:items-center lg:flex-row flex-col gap-4">
+        <Button onClick={() => navigate("/auth/login")} variant="outline">
+          Login
+        </Button>
+        <Button onClick={() => navigate("/auth/register")}>Sign Up</Button>
+      </div>
+    );
+  }
 
   console.log(cartItems, "sangam");
 

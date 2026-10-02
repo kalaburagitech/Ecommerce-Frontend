@@ -10,7 +10,7 @@ import {
 } from "@/store/shop/search-slice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function SearchProducts() {
   const [keyword, setKeyword] = useState("");
@@ -20,10 +20,11 @@ function SearchProducts() {
   const { searchResults } = useSelector((state) => state.shopSearch);
   const { productDetails } = useSelector((state) => state.shopProducts);
 
-  const { user } = useSelector((state) => state.auth);
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   const { cartItems } = useSelector((state) => state.shopCart);
   const { toast } = useToast();
+  const navigate = useNavigate();
   useEffect(() => {
     if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
       setTimeout(() => {
@@ -37,6 +38,12 @@ function SearchProducts() {
   }, [keyword]);
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
+    if (!isAuthenticated) {
+      toast({ title: "Please login to add items to cart" });
+      navigate("/auth/login");
+      return;
+    }
+
     console.log(cartItems);
     let getCartItems = cartItems.items || [];
 

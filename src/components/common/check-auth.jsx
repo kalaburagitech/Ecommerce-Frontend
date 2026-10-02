@@ -6,19 +6,20 @@ function CheckAuth({ isAuthenticated, user, children }) {
   console.log(location.pathname, isAuthenticated);
 
   if (location.pathname === "/") {
-    if (!isAuthenticated) {
-      return <Navigate to="/auth/login" />;
-    } else {
-      if (user?.role === "admin") {
-        return <Navigate to="/admin/dashboard" />;
-      } else {
-        return <Navigate to="/shop/home" />;
-      }
+    if (isAuthenticated && user?.role === "admin") {
+      return <Navigate to="/admin/dashboard" />;
     }
+    return <Navigate to="/shop/home" />;
   }
+
+  const isBrowsableShopPage =
+    location.pathname.includes("/shop/home") ||
+    location.pathname.includes("/shop/listing") ||
+    location.pathname.includes("/shop/search");
 
   if (
     !isAuthenticated &&
+    !isBrowsableShopPage &&
     !(
       location.pathname.includes("/login") ||
       location.pathname.includes("/register")
